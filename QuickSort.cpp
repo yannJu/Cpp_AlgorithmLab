@@ -47,11 +47,11 @@ int NICO_QUICKSORT(vector<int>* , int, int, ANSWER *);
 
 int main(){
     int t, len;
+    vector<int>  tony_ary, nico_ary;
+    ANSWER tony, nico;
 
     cin >> t;
     while(t--){
-        vector<int>  tony_ary, nico_ary;
-        ANSWER tony, nico;
         cin >> len;
         for (int i = 0; i < len; i++) {
             int tmp;
@@ -66,6 +66,8 @@ int main(){
         QUICKSORT(&nico_ary, 0, nico_ary.size() - 1,- 1,&nico);
 
         cout << tony.swap << " "  << nico.swap << " " << tony.compare << " " << nico.compare << endl;
+        tony_ary.clear();
+        nico_ary.clear();
     }
     return 0;
 }
