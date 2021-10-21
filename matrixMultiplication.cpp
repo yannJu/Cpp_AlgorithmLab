@@ -4,7 +4,7 @@ using namespace std;
 
 int **A, **B, **C;
 void matrixMultiple_bruteForce(int**, int**, int, int, int);
-int** matrixMultiple_dynamic(int**, int**, int);
+int** matrixMultiple_divideConquer(int**, int**, int);
 
 int main(){
     int Ar, Ac, Br, Bc, tmp;
@@ -30,8 +30,8 @@ int main(){
         }
     }
     matrixMultiple_bruteForce(A, B, Ar, Ac, Bc);
-    C = matrixMultiple_dynamic(A, B, Ar);
-    cout << "Dynamic-------------------------" << endl;
+    C = matrixMultiple_divideConquer(A, B, Ar);
+    cout << "divideConquer-------------------------" << endl;
     for (int i = 0; i < Ar; i++){
         for (int j = 0; j < Ar; j++) cout << C[i][j] << " " ;
         cout << endl;
@@ -61,7 +61,7 @@ void matrixMultiple_bruteForce(int** a, int**b, int r, int ar, int c){
     cout << "--------------------------------------" << endl;
 }
 
-int** matrixMultiple_dynamic(int**a, int**b, int ar){
+int** matrixMultiple_divideConquer(int**a, int**b, int ar){
     int n = ar;
     int **C = new int*[ar];
     int **Atmp_f = new int*[ar/2],  **Atmp_s = new int*[ar/2], **Btmp_f = new int*[ar/2], **Btmp_s = new int*[ar/2];
@@ -82,7 +82,7 @@ int** matrixMultiple_dynamic(int**a, int**b, int ar){
             }
         }
         for (int i = 0; i < n / 2; i++){
-            for (int j = 0; j < n / 2; j++ ) C[i][j] = matrixMultiple_dynamic(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_dynamic(Atmp_s, Btmp_s, ar / 2)[i][j];
+            for (int j = 0; j < n / 2; j++ ) C[i][j] = matrixMultiple_divideConquer(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_divideConquer(Atmp_s, Btmp_s, ar / 2)[i][j];
         }
         //C12
         for (int i = 0; i < n / 2; i++){
@@ -99,7 +99,7 @@ int** matrixMultiple_dynamic(int**a, int**b, int ar){
         }
         for (int i = 0; i < n / 2; i++){
             for (int j = 0; j < n / 2; j++ ) {
-                C[i][j + n / 2] = matrixMultiple_dynamic(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_dynamic(Atmp_s, Btmp_s, ar / 2)[i][j];
+                C[i][j + n / 2] = matrixMultiple_divideConquer(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_divideConquer(Atmp_s, Btmp_s, ar / 2)[i][j];
             }
         }
         //C21
@@ -117,7 +117,7 @@ int** matrixMultiple_dynamic(int**a, int**b, int ar){
         }
         for (int i = 0; i < n / 2; i++){
             for (int j = 0; j < n / 2; j++ ) {
-                C[i + n / 2][j] = matrixMultiple_dynamic(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_dynamic(Atmp_s, Btmp_s, ar / 2)[i][j];
+                C[i + n / 2][j] = matrixMultiple_divideConquer(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_divideConquer(Atmp_s, Btmp_s, ar / 2)[i][j];
             }
         }
         //C22
@@ -135,7 +135,7 @@ int** matrixMultiple_dynamic(int**a, int**b, int ar){
         }
         for (int i = 0; i < n / 2; i++){
             for (int j = 0; j < n / 2; j++ ) {
-                C[i + n / 2][j + n / 2] = matrixMultiple_dynamic(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_dynamic(Atmp_s, Btmp_s, ar / 2)[i][j];
+                C[i + n / 2][j + n / 2] = matrixMultiple_divideConquer(Atmp_f, Btmp_f, ar / 2)[i][j] + matrixMultiple_divideConquer(Atmp_s, Btmp_s, ar / 2)[i][j];
             }
         }
     }
