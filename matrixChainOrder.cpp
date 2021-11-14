@@ -29,7 +29,6 @@ void matrixChain(vector<int> &P){
     for (int i = 0; i < P.size() - 1; i++) s[i] = new int[P.size() - 1];
 
     for (int i = 0; i < P.size() - 1; i++) result[i][i] = 0;
-    for (int i = 0; i < P.size() - 1; i++) result[i][i] = i + 1;
     for (int l = 2; l < P.size(); l++){
         for (int j  = 1; j < P.size() -l + 1; j++){
             k = j + l - 1;
@@ -44,7 +43,7 @@ void matrixChain(vector<int> &P){
         }
     }
     for (int i= 0; i < P.size() - 1; i++){
-        for (int j = 0;  j < P.size() - 1; j++) cout << s[i][j] << " ";
+        for (int j = 0;  j < P.size() - 1; j++) cout << result[i][j] << " ";
         cout << endl;
     }
 }
