@@ -1,7 +1,7 @@
 /*
-Minimum Spanning Tree (Prim’s Algorithm)
+Minimum Spanning Tree (Kruskal’s Algorithm)
 Connected, Weighted, Undirected 그래프 G가 주어졌을 때, 이 그래프의 minimum spanning
-tree(MST)를 구하는 Prim의 알고리즘을 구현하시오.
+tree(MST)를 구하는 Kruskal의 알고리즘을 구현하시오.
 예를 들어, 10개의 노드와 가중치를 가지는 19개의 에지로 구성된 아래 그래프 G의 MST T는 다음과
 같다.
 위의 그래프에서 9개의 에지로 구성된 MST T의 에지의 가중치의 총합은 37이다.
@@ -56,76 +56,86 @@ tree(MST)를 구하는 Prim의 알고리즘을 구현하시오.
 
 #include <iostream>
 #include <vector>
-#include <climits>
 #include <algorithm>
 using namespace std;
 
+struct NODE{
+    int weight;
+    int u;
+    int v;
+};
 
-vector<int> keys;
-void Prim(vector<vector<int> > *, vector<int> *, int);
-
-int isFind(vector<pair<int, int> > v, int idx) {
-    for (int i = 0; i < v.size(); i++) {
-        if (v[i].first == idx) return i;
-    }
-    return -1;
-}
-bool compare(pair<int, int> a, pair<int, int> b)  {return a.second < b.second;}
+bool compare(NODE a, NODE b) {return a.weight <= b.weight;}
+void KRUSKAL(vector<NODE>, int);
+int findSet(int, vector<vector<int> >);
 
 int main(){
     int t_case, nodeCase;
+    vector<NODE> nodeVec;
 
-    cin >> t_case; //TestCase 수 (ex : 3)
+    cin >> t_case;
     while(t_case--){
-        vector<vector<int> > G;
-    
-        cin >> nodeCase; //Node 수 (ex : 10)
-        keys.assign(nodeCase, INT_MAX);
-        //-------------------------------Create Graph
+        cin >> nodeCase;
+        //Edge (undirect) Init
         for (int i = 0; i < nodeCase; i++){
-            vector<int> v;
             int n, tmp;
-            cin >> n >> tmp; //Node, 와 인접한 Node 수 (ex : 1, 3)
-            v.assign(nodeCase, -1); //인접하지 않으면 -1로 표기되도록 초기화
-            v[i] = 0; //자기자신은 0
-            while(tmp--) {
-                int ajN, weight;
-                cin >> ajN >> weight;
-                v[ajN - 1] = weight;
-            }
-            G.push_back(v);
-        }
-        //----------------------------------------------
-        Prim(&G, &keys, 0);
-    }
-}
-
-void Prim(vector<vector<int> > * g, vector<int> *k, int r){
-    vector<int> keys = *k; //ck벡터와 key값을 가지고 있는 벡터
-    vector<vector<int> > G = *g; //그래프 벡터(인접벡터)
-    vector<pair<int, int> > ckV;
-    int sum = 0, cnt = 0;
-
-    keys[r] = 0; //r 제외 INT_MAX
-    for (int i = 0; i < keys.size(); i++) ckV.push_back(make_pair(i, keys[i]));
-
-    while(!ckV.empty()){
-        sort(ckV.begin(), ckV.end(), compare);
-        pair<int, int> u = ckV[0]; //Extract_min
-        ckV.erase(ckV.begin());
-        vector<int> tmp = G[u.first];
-        for (int i = 0; i < tmp.size(); i++){
-            //자기 자신이 아니며 & w(u, v) (= tmp[i]) < v.key (= keys[i]) & Q에 속해있는 경우
-            if ((tmp[i] > 0) and (tmp[i] < keys[i]))  {
-                int idx = isFind(ckV, i);
-                if (idx >= 0) {
-                    keys[i] = tmp[i]; //key값을 변경
-                    ckV[idx] = make_pair(ckV[idx].first, tmp[i]);
+            cin >> n >> tmp;
+            while(tmp--){
+                int node, weight;
+                NODE N;
+                cin >> node >> weight;
+                if (node - 1 > i) {
+                    N.weight = weight; N.u = i + 1; N.v = node;
+                    nodeVec.push_back(N);
                 }
             }
         }
+        sort(nodeVec.begin(), nodeVec.end(), compare);
+        // for (int k = 0; k < nodeVec.size(); k++) cout << nodeVec[k].u << " -> " << nodeVec[k].v << " w : " << nodeVec[k].weight << endl;
+        KRUSKAL(nodeVec, nodeCase);
+        nodeVec.clear();
     }
-    for (int k = 0; k < keys.size(); k++) sum += keys[k]; 
+}
+
+void KRUSKAL(vector<NODE> w, int nodeCase){
+    int sum = 0; //A
+    vector<vector<int> > G_V;
+
+    //MAKE_SET
+    for (int i = 0; i <= nodeCase; i++) {
+        vector<int> tmp;
+        tmp.push_back(i);
+        G_V.push_back(tmp);
+    }
+
+    //이미 w는 오름차순으로 정렬 되어있음 -> sort 생략
+    for (int e = 0; e < w.size(); e++){
+        int uIdx = findSet(w[e].u, G_V), vIdx = findSet(w[e].v, G_V);
+    
+        //u < v가 되도록 만듦
+        if (uIdx > vIdx){
+            int tmpIdx = uIdx;
+            uIdx = vIdx;
+            vIdx = tmpIdx;
+        }
+        
+        // cout <<  "(" << w[e].u << ", " << w[e].v << ") U: " << uIdx << " V : " << vIdx << endl;
+        if ((uIdx >= 0) and (vIdx >= 0) and (uIdx != vIdx)){
+            sum += w[e].weight;
+            vector<int> uTmp = G_V[uIdx], vTmp = G_V[vIdx];
+            for (int i = 0; i < vTmp.size(); i++) uTmp.push_back(vTmp[i]);
+            G_V.erase(G_V.begin() + vIdx);
+            G_V[uIdx] = uTmp;
+        }
+    }
     cout << sum << endl;
-    keys.clear();
+}
+
+int findSet(int n, vector<vector<int> > v){
+    for (int i =  1; i < v.size(); i++){
+        vector<int> tmp = v[i];
+        auto it = find(tmp.begin(), tmp.end(), n);
+        if (it != tmp.end()) return i;
+    }
+    return -1;
 }
