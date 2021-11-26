@@ -107,7 +107,6 @@ void KRUSKAL(vector<NODE> w, int nodeCase){
         tmp.push_back(i);
         G_V.push_back(tmp);
     }
-
     //이미 w는 오름차순으로 정렬 되어있음 -> sort 생략
     for (int e = 0; e < w.size(); e++){
         int uIdx = findSet(w[e].u, G_V), vIdx = findSet(w[e].v, G_V);
@@ -119,7 +118,7 @@ void KRUSKAL(vector<NODE> w, int nodeCase){
             vIdx = tmpIdx;
         }
         
-        // cout <<  "(" << w[e].u << ", " << w[e].v << ") U: " << uIdx << " V : " << vIdx << endl;
+        //  cout <<  "(" << w[e].u << ", " << w[e].v << ") U: " << uIdx << " V : " << vIdx << endl;
         if ((uIdx >= 0) and (vIdx >= 0) and (uIdx != vIdx)){
             sum += w[e].weight;
             vector<int> uTmp = G_V[uIdx], vTmp = G_V[vIdx];

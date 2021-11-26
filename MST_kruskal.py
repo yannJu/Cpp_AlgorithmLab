@@ -1,7 +1,7 @@
-/*
-Minimum Spanning Tree (Prim’s Algorithm)
+'''
+Minimum Spanning Tree (Kruskal’s Algorithm)
 Connected, Weighted, Undirected 그래프 G가 주어졌을 때, 이 그래프의 minimum spanning
-tree(MST)를 구하는 Prim의 알고리즘을 구현하시오.
+tree(MST)를 구하는 Kruskal의 알고리즘을 구현하시오.
 예를 들어, 10개의 노드와 가중치를 가지는 19개의 에지로 구성된 아래 그래프 G의 MST T는 다음과
 같다.
 위의 그래프에서 9개의 에지로 구성된 MST T의 에지의 가중치의 총합은 37이다.
@@ -52,74 +52,42 @@ tree(MST)를 구하는 Prim의 알고리즘을 구현하시오.
 36
 20
 24
-*/
+'''
 
-#include <vector>
-#include <iostream>
-#include <queue>
-#include <climits>
-using namespace std;
+import sys
 
-struct compare{
-    bool operator()(pair<int, int> a, pair<int, int> b) {return a.second > b.second;}
-};
+def findSet(pr, idx):
+    if idx != pr[idx]: pr[idx] = findSet(pr, pr[idx])
+    return pr[idx]
 
-void PRIM(vector<vector<pair<int, int> > > *v, int);
+def KRUSKAL(G, n):
+    sum = 0 #A
+    G_V = list()
+    parent = list()
+    G_E = sorted(G.items(), key=lambda x: x[1])
+    for i in range(n + 1): G_V.append([i]); #Make_set
+    for i in range(n + 1): parent.append(i); #parent
+    
+    for ge in range(len(G_E)):
+        geUV = G_E[ge][0]
+        uIdx = findSet(parent, geUV[0]); vIdx = findSet(parent, geUV[1]) 
+        if (uIdx > vIdx):
+            tmp = uIdx
+            uIdx = vIdx
+            vIdx = tmp
+            
+        if (uIdx != vIdx):
+            sum += G_E[ge][1]
+            parent[vIdx] = parent[uIdx]
+    print(sum)
 
-int main(){
-    int t_case, nodeCase;
-    vector<vector<pair<int, int> > > adjMatrix;
-
-    cin >> t_case;
-    while(t_case--){
-        cin >> nodeCase;
-        //Edge (undirect) Init
-        vector<pair<int, int> > zeroIdx;
-        zeroIdx.push_back(make_pair(-1, -1));
-        adjMatrix.push_back(zeroIdx);
-        for (int i = 0; i < nodeCase; i++){
-            int n, tmp;
-            vector<pair<int, int> > NODE;
-            cin >> n >> tmp;
-            while(tmp--){
-                int node, weight;
-                cin >> node >> weight;
-                NODE.push_back(make_pair(node, weight));
-            }
-            adjMatrix.push_back(NODE);
-        }
-        PRIM(&adjMatrix, nodeCase);
-    adjMatrix.clear();
-    }
-}
-
-void PRIM(vector<vector<pair<int, int> > > * adjMat, int nodeCase){
-    priority_queue<pair<int, int> , vector<pair<int, int> >, compare> q;
-    vector<vector<pair<int, int> > > G = *adjMat;
-    vector<int> keys, ckAry;
-    int sum = 0;
-
-    keys.assign(nodeCase + 1, INT_MAX);
-    ckAry.assign(nodeCase + 1, 0);
-    keys[1] = 0;
-    q.push(make_pair(1, 0));
-
-    while(!q.empty()){
-        pair<int, int> u = q.top();
-        // cout << u.first << " " << u.second << endl;
-        q.pop();
-        if (ckAry[u.first] == 1) continue;
-        ckAry[u.first] = 1;
-        sum += u.second;
-        vector<pair<int, int> > nodeTmp = G[u.first];
-        for (int i = 0; i < nodeTmp.size(); i++){
-            pair<int, int> tmp = nodeTmp[i];
-            // cout << "TMP : " << tmp.first << " " << tmp.second << " ckAry : " << ckAry[tmp.first] << endl;
-            if (tmp.second < keys[tmp.first]){
-                keys[tmp.first] = tmp.second;
-                if (ckAry[tmp.first] == 0)q.push(tmp);
-            }
-        }
-    }
-    cout << sum << endl;
-}
+t_case = int(input())
+for t in range(t_case):
+    nodes = int(input())
+    adjMatrix = dict()
+    for n in range(1, nodes + 1):
+        tmp = list(map(int, sys.stdin.readline().split()))
+        for i in range(2, len(tmp), 2): 
+            if (tmp[i] > n): adjMatrix[((n, tmp[i]))] = tmp[i + 1]
+    
+    KRUSKAL(adjMatrix, nodes)
